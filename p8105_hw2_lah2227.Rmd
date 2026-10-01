@@ -1,0 +1,24 @@
+---
+title: "P8105 Homework 2"
+author: "Lauren Holley"
+output: github_document
+---
+```{r message=FALSE}
+library(tidyverse)
+```
+
+## Reading and cleaning the subways dataset
+
+```{r}
+subways_df = 
+  read_csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") |>
+  janitor::clean_names() |>
+  mutate(
+    entry = case_match(
+      entry,
+      "YES" ~ TRUE,
+      "NO" ~ FALSE
+    )
+  )
+```
+
