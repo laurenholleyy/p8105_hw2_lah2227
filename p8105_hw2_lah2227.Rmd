@@ -201,3 +201,13 @@ amyloid_df = (
 ```
 
 Important steps I took in the `amyloid_df` import (similar to the last one) included the skip step to remove encoding instructions put in by the creators of the dataset, as well as coding the `NA` and `Na` values in the dataset to be `NA`. Other steps included using `clean_names` to make variables snake case, and utilizing `pivot_longer` to reassign `time` and `amyloid_ratio` into columns. Through this process, I removed the `time_` prefixes for readability, and then changed the baseline to 0 to be able to make time a `<dbl>` type variable. The dataset includes `r ncol(amyloid_df)` columns and `r nrow(amyloid_df)` rows.
+
+```{r}
+amyloid_df =
+  amyloid_df |>
+  rename(id = study_id)
+
+mci_df =
+  inner_join(baseline_df, amyloid_df, by = "id")
+```
+
