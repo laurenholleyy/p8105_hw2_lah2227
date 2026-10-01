@@ -5,6 +5,7 @@ output: github_document
 ---
 ```{r message=FALSE}
 library(tidyverse)
+library(readxl)
 ```
 
 ## Problem 1
@@ -90,3 +91,53 @@ subways_df |>
 17 stations that serve the A train are also ADA compliant.
 
 ## Problem 2
+
+Importing the Trash Wheel data!!
+
+```{r}
+mr_trash_df =
+  readxl::read_excel(
+    "data/Trash Wheel Collection Data.xlsx",
+    sheet = "Mr. Trash Wheel",
+    range = "A2:N709"
+    ) |>
+  janitor::clean_names() |>
+  mutate(
+    sports_balls = as.integer(round(sports_balls, digits = 0)),
+    year = as.numeric(year),
+    trash_wheel = "mr"
+  )
+
+prof_trash_df =
+  readxl::read_excel(
+    "data/Trash Wheel Collection Data.xlsx",
+    sheet = "Professor Trash Wheel",
+    range = "A2:M134"
+    ) |>
+  janitor::clean_names() |>
+  mutate(
+    trash_wheel = "professor"
+  )
+
+gwynns_trash_df =
+  readxl::read_excel(
+    "data/Trash Wheel Collection Data.xlsx",
+    sheet = "Gwynns Falls Trash Wheel",
+    range = "A2:L351"
+    ) |>
+  janitor::clean_names() |>
+  mutate(
+    trash_wheel = "gwynns"
+  )
+```
+
+Binding rows: 
+
+```{r}
+trash_wheel_df =
+  bind_rows(mr_trash_df, prof_trash_df, gwynns_trash_df) |>
+  relocate(trash_wheel)
+```
+
+
+
