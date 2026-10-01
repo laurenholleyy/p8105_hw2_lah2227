@@ -148,6 +148,8 @@ The `trash_wheel_df` dataset contains variable names: `r colnames(trash_wheel_df
 
 ## Problem 3
 
+#### Baseline Dataset 
+
 ```{r}
 baseline_df = (
   read_csv("data/MCI_baseline.csv",
@@ -169,10 +171,33 @@ baseline_df = (
 )
 ```
 
-Important steps for the import included the skip step to remove encoding instructions put in by the creators of the dataset, as well as coding the `.` values in the dataset to be `NA`. Other steps included using `clean_names` to make variables snake case, as well as the assignment requirements to properly encode character values for both the `sex` and `apoe4` variables. Lastly, I went back and renamed `current_age` to `bl_age` for easier personal understanding of the data. 
+Important steps for the `baseline_df` import included the skip step to remove encoding instructions put in by the creators of the dataset, as well as coding the `.` values in the dataset to be `NA`. Other steps included using `clean_names` to make variables snake case, as well as the assignment requirements to properly encode character values for both the `sex` and `apoe4` variables. Lastly, I went back and renamed `current_age` to `bl_age` for easier personal understanding of the data. 
 
 * In total, 483 participants were recruited, with 479 remaining within the inclusion criteria for no MCI at baseline. Of these remaining, `r baseline_df |> filter(!is.na(age_at_onset)) |> nrow()` developed MCI. 
 
 * The average baseline age was `r round(mean(pull(baseline_df, bl_age)), 2)` years old. 
 
 * `r baseline_df |> filter(sex == "female") |> summarize(proportion = mean(apoe4 == "carrier"))` is the proportion of women in the study that were APOE4 carriers. 
+
+#### Longitudinal Marker Dataset
+
+```{r}
+amyloid_df = (
+  read_csv("data/mci_amyloid.csv",
+           skip = 1,
+           na = c("NA", "Na")) |>
+    janitor::clean_names() |>
+    pivot_longer(
+      baseline:time_8,
+      names_to = "time",
+      names_prefix = "time_",
+      values_to = "amyloid_ratio"
+    ) |>
+  mutate(
+    time = replace(time, time == "baseline", "0"),
+    time = as.numeric(time)
+  )
+)
+```
+
+Important steps I took in the `amyloid_df` import (similar to the last one) included the skip step to remove encoding instructions put in by the creators of the dataset, as well as coding the `NA` and `Na` values in the dataset to be `NA`. Other steps included using `clean_names` to make variables snake case, and utilizing `pivot_longer` to reassign `time` and `amyloid_ratio` into columns. Through this process, I removed the `time_` prefixes for readability, and then changed the baseline to 0 to be able to make time a `<dbl>` type variable. The dataset includes `r ncol(amyloid_df)` columns and `r nrow(amyloid_df)` rows.
