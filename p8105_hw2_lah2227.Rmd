@@ -71,3 +71,22 @@ subways_df |>
 
 37.7% of station entrances / exits without vending allow entrance.
 
+```{r}
+subways_df |>
+  filter(route_name == "A") |>
+  distinct(line, station_name) |>
+  nrow()
+```
+
+60 distinct stations serve the A train. 
+
+```{r}
+subways_df |>
+  filter(route_name == "A", ada == TRUE) |>
+  distinct(line, station_name) |>
+  nrow()
+```
+
+17 stations that serve the A train are also ADA compliant.
+
+## Problem 2
