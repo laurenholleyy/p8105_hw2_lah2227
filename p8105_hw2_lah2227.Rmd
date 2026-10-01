@@ -7,7 +7,7 @@ output: github_document
 library(tidyverse)
 ```
 
-## Reading and cleaning the subways dataset
+## Problem 1
 
 ```{r}
 subways_df = 
@@ -25,6 +25,10 @@ subways_df =
       entry,
       "YES" ~ TRUE,
       "NO" ~ FALSE),
+    vending = case_match(
+      vending,
+      "YES" ~ TRUE,
+      "NO" ~ FALSE),
       route_number = as.numeric(route_number)
   ) |>
   select(line:entry, vending, ada, route_number, route_name)
@@ -36,10 +40,34 @@ My steps for cleaning:
 
 2. `pivot_longer` since the route columns were unnecessarily separated. I added a prefix "route" so only the number of the route was retained. Those numbers were then places into `route_number`. Values of each of these columns were sent to `route_name`, and then transformed to characters due to their mixed numeric and character nature. 
 
-3. I did the suggested `case_match` step from instructions to create a logical assignment in the entry variable.
+3. I did the suggested `case_match` step from instructions to create a logical assignment in the `entry` variable. I then realized that `vending` was also a chr variable and switched it to logical instead.
 
 4. I made route numbers numeric using `as.numeric`.
 
 5. I selected for the requested variables. 
 
 The `subways_df` dataset contains variable names: `r colnames(subways_df)`. The dataset includes `r ncol(subways_df)` columns and `r nrow(subways_df)` rows. 
+
+```{r}
+nrow(distinct(subways_df, line, station_name))
+```
+
+There are 465 distinct stations.
+
+```{r}
+subways_df |>
+  filter(ada == TRUE) |>
+  distinct(line, station_name) |>
+  nrow()
+```
+
+There are 84 stations that are ADA compliant.
+
+```{r}
+subways_df |>
+  filter(vending == FALSE) |>
+  summarize(proportion = mean(entry))
+```
+
+37.7% of station entrances / exits without vending allow entrance.
+
