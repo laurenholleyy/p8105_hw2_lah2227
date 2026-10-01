@@ -139,5 +139,14 @@ trash_wheel_df =
   relocate(trash_wheel)
 ```
 
+The `trash_wheel_df` dataset contains variable names: `r colnames(trash_wheel_df)`. The dataset includes `r ncol(trash_wheel_df)` columns and `r nrow(trash_wheel_df)` rows. Some key variables include `trash_wheel` with values mr, professor, and gwynns, which indicate which trash wheel the data originated from, and `weight_tons`, signifying the weight in tons of trash collected through a `<dbl>` value. 
+
+* The total weight collected by Professor Trash Wheel was `r round(sum(pull(trash_wheel_df |> filter(trash_wheel == "professor") |> drop_na(weight_tons), weight_tons)), 2)` tons. 
+
+* The total number of cigarette butts collected by the Gwynns Falls Trash Wheel was
+`r as.integer(sum(pull(trash_wheel_df |> filter(trash_wheel == "gwynns", month == "June", year == 2022) |> drop_na(cigarette_butts), cigarette_butts)))` in June 2022.
+
+## Problem 3
+
 
 
