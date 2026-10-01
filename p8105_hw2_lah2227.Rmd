@@ -13,12 +13,33 @@ library(tidyverse)
 subways_df = 
   read_csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") |>
   janitor::clean_names() |>
+   pivot_longer(
+    route1:route11,
+    names_to = "route_number",
+    names_prefix = "route",
+    values_to = "route_name",
+    values_transform = as.character
+  ) |>
   mutate(
     entry = case_match(
       entry,
       "YES" ~ TRUE,
-      "NO" ~ FALSE
-    )
-  )
+      "NO" ~ FALSE),
+      route_number = as.numeric(route_number)
+  ) |>
+  select(line:entry, vending, ada, route_number, route_name)
 ```
 
+My steps for cleaning:
+
+1. `clean_names` to make all column names snake case.
+
+2. `pivot_longer` since the route columns were unnecessarily separated. I added a prefix "route" so only the number of the route was retained. Those numbers were then places into `route_number`. Values of each of these columns were sent to `route_name`, and then transformed to characters due to their mixed numeric and character nature. 
+
+3. I did the suggested `case_match` step from instructions to create a logical assignment in the entry variable.
+
+4. I made route numbers numeric using `as.numeric`.
+
+5. I selected for the requested variables. 
+
+The `subways_df` dataset contains variable names: `r colnames(subways_df)`. The dataset includes `r ncol(subways_df)` columns and `r nrow(subways_df)` rows. 
