@@ -39,7 +39,7 @@ My steps for cleaning:
 
 1. `clean_names` to make all column names snake case.
 
-2. `pivot_longer` since the route columns were unnecessarily separated. I added a prefix "route" so only the number of the route was retained. Those numbers were then places into `route_number`. Values of each of these columns were sent to `route_name`, and then transformed to characters due to their mixed numeric and character nature. 
+2. `pivot_longer` since the route columns were unnecessarily separated. I removed a prefix "route" so only the number of the route was retained. Those numbers were then places into `route_number`. Values of each of these columns were sent to `route_name`, and then transformed to characters due to their mixed numeric and character nature. 
 
 3. I did the suggested `case_match` step from instructions to create a logical assignment in the `entry` variable. I then realized that `vending` was also a chr variable and switched it to logical instead.
 
@@ -202,6 +202,8 @@ amyloid_df = (
 
 Important steps I took in the `amyloid_df` import (similar to the last one) included the skip step to remove encoding instructions put in by the creators of the dataset, as well as coding the `NA` and `Na` values in the dataset to be `NA`. Other steps included using `clean_names` to make variables snake case, and utilizing `pivot_longer` to reassign `time` and `amyloid_ratio` into columns. Through this process, I removed the `time_` prefixes for readability, and then changed the baseline to 0 to be able to make time a `<dbl>` type variable. The dataset includes `r ncol(amyloid_df)` columns and `r nrow(amyloid_df)` rows.
 
+Renaming `amyloid_df` column to match the naming of the `id` column in `baseline_df` and combining both into one dataframe `mci_df`:
+
 ```{r}
 amyloid_df =
   amyloid_df |>
@@ -209,5 +211,22 @@ amyloid_df =
 
 mci_df =
   inner_join(baseline_df, amyloid_df, by = "id")
+
+write_csv(mci_df, "data/mci_combined.csv")
 ```
 
+Those only in `baseline_df`:
+
+```{r}
+nrow(baseline_df) - nrow(distinct(mci_df, id))
+```
+
+Those only in `amyloid_df`:
+
+```{r}
+nrow(distinct(amyloid_df, id)) - nrow(distinct(mci_df, id))
+```
+
+There are a few participants that only appear in one dataset or another (8 only in `baseline_df` and 16 only in `amyloid_df`), but overall a majority of participants were found in both datasets, creating a relatively complete picture to compare across baseline characteristics and amyloid ratio at different points in time. 
+
+The combined `mci_df` has `r ncol(mci_df)` columns and `r nrow(mci_df)` rows. There are `r nrow(distinct(mci_df, id))` distinct ids in this dataset, signifying the number of participants appearing in both datasets. It includes variables: `r colnames(mci_df)`. 
