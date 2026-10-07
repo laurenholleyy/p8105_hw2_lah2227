@@ -97,9 +97,9 @@ Importing the Trash Wheel data!!
 ```{r}
 mr_trash_df =
   readxl::read_excel(
-    "data/Trash Wheel Collection Data.xlsx",
+    "data/202610 Trash Wheel Collection Data.xlsx",
     sheet = "Mr. Trash Wheel",
-    range = "A2:N709"
+    range = "A2:N742"
     ) |>
   janitor::clean_names() |>
   mutate(
@@ -110,24 +110,26 @@ mr_trash_df =
 
 prof_trash_df =
   readxl::read_excel(
-    "data/Trash Wheel Collection Data.xlsx",
+    "data/202610 Trash Wheel Collection Data.xlsx",
+    na = "dive",
     sheet = "Professor Trash Wheel",
-    range = "A2:M134"
+    range = "A2:M139"
     ) |>
   janitor::clean_names() |>
+  filter(!is.na(dumpster)) |>
   mutate(
     trash_wheel = "professor"
   )
 
-gwynns_trash_df =
+gwynnda_trash_df =
   readxl::read_excel(
-    "data/Trash Wheel Collection Data.xlsx",
-    sheet = "Gwynns Falls Trash Wheel",
-    range = "A2:L351"
+    "data/202610 Trash Wheel Collection Data.xlsx",
+    sheet = "Gwynnda the Good Wheel of the W",
+    range = "A2:L394"
     ) |>
   janitor::clean_names() |>
   mutate(
-    trash_wheel = "gwynns"
+    trash_wheel = "gwynnda"
   )
 ```
 
@@ -135,16 +137,16 @@ Binding rows:
 
 ```{r}
 trash_wheel_df =
-  bind_rows(mr_trash_df, prof_trash_df, gwynns_trash_df) |>
+  bind_rows(mr_trash_df, prof_trash_df, gwynnda_trash_df) |>
   relocate(trash_wheel)
 ```
 
-The `trash_wheel_df` dataset contains variable names: `r colnames(trash_wheel_df)`. The dataset includes `r ncol(trash_wheel_df)` columns and `r nrow(trash_wheel_df)` rows. Some key variables include `trash_wheel` with values mr, professor, and gwynns, which indicate which trash wheel the data originated from, and `weight_tons`, signifying the weight in tons of trash collected through a `<dbl>` value. 
+The `trash_wheel_df` dataset contains variable names: `r colnames(trash_wheel_df)`. The dataset includes `r ncol(trash_wheel_df)` columns and `r nrow(trash_wheel_df)` rows. Some key variables include `trash_wheel` with values mr, professor, and gwynnda, which indicate which trash wheel the data originated from, and `weight_tons`, signifying the weight in tons of trash collected through a `<dbl>` value. 
 
 * The total weight collected by Professor Trash Wheel was `r round(sum(pull(trash_wheel_df |> filter(trash_wheel == "professor") |> drop_na(weight_tons), weight_tons)), 2)` tons. 
 
-* The total number of cigarette butts collected by the Gwynns Falls Trash Wheel was
-`r as.integer(sum(pull(trash_wheel_df |> filter(trash_wheel == "gwynns", month == "June", year == 2022) |> drop_na(cigarette_butts), cigarette_butts)))` in June 2022.
+* The total number of cigarette butts collected by the Gwynnda Trash Wheel was
+`r as.integer(sum(pull(trash_wheel_df |> filter(trash_wheel == "gwynnda", month == "June", year == 2022) |> drop_na(cigarette_butts), cigarette_butts)))` in June 2022.
 
 ## Problem 3
 
